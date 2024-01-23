@@ -143,7 +143,7 @@ def dashboard():
         murl=request.form['url']
         desc=request.form['desc']
         tid=request.form['tid']
-        city=request.form['city']
+        city=request.form['cityname']
 
         task =db_movie(name = mname, url=murl,desc = desc,tid=tid,city=city)
         db.session.add(task)
