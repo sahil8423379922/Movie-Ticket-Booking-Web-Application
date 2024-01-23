@@ -1,3 +1,4 @@
+import json
 from flask import Flask ,render_template , request, redirect
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
@@ -42,6 +43,8 @@ class db_movie(db.Model):
     name=db.Column(db.String(200),nullable=False)
     url=db.Column(db.String(500),nullable = False)
     desc=db.Column(db.String(500),nullable = False)
+    tid=db.Column(db.String(500),nullable = False)
+    city=db.Column(db.String(500),nullable = False)
     
 
 
@@ -109,6 +112,28 @@ def seeall():
 def admin():
     return render_template('dashbaord.html')
 
+@app.route('/movie/<string:mname>')
+def movie(mname):
+   
+    minstance=""
+    tn=""
+    tid=""
+    
+
+    tname={1:["Inox","Delhi"],2:["PVR","Delhi"]}
+    fetchmovie = db_movie.query.all()
+    
+    for x in fetchmovie:
+        for m,n in tname.items():
+            if int(x.tid)==m and x.city==n[1]:
+               minstance = x
+               tn=n[0]
+               tid=m
+                
+
+    return render_template('movie_booking.html',mname=mname,minstance=minstance,tn=tn,tid=tid)
+
+
 
 @app.route('/dashboard',methods =['GET','POST'])
 def dashboard():
@@ -117,8 +142,10 @@ def dashboard():
         mname=request.form['name']
         murl=request.form['url']
         desc=request.form['desc']
+        tid=request.form['tid']
+        city=request.form['city']
 
-        task =db_movie(name = mname, url=murl,desc = desc)
+        task =db_movie(name = mname, url=murl,desc = desc,tid=tid,city=city)
         db.session.add(task)
         db.session.commit()
         redirect('/dashboard')
