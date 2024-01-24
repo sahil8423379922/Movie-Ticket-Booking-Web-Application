@@ -112,26 +112,53 @@ def seeall():
 def admin():
     return render_template('dashbaord.html')
 
-@app.route('/movie/<string:mname>')
+
+@app.route('/movie/<string:mname>',methods =['GET','POST'])
 def movie(mname):
-   
+    if request.method =='POST':
+        city = request.form['inputGroupSelect01']
+        print(city)
+
+
+    cityname=['Kanpur','Lucknow','Delhi','Amritsar','Noida']
     minstance=""
     tn=""
     tid=""
+
+    bd={}
     
 
-    tname={1:["Inox","Delhi"],2:["PVR","Delhi"]}
+    tname={1:"INOX",2:"PVR"}
     fetchmovie = db_movie.query.all()
-    
+    tid=[]
     for x in fetchmovie:
-        for m,n in tname.items():
-            if int(x.tid)==m and x.city==n[1]:
-               minstance = x
-               tn=n[0]
-               tid=m
+        print("Name of the City =",x.city)
+        print("Name of the Movie =",x.name)
+        print("TID =",x.tid) 
+        tid.append(x.tid)
+
+    
+    for m,n in tname.items():
+        if m in tid:
+            bd[m]=[n,minstance]
+
+    print(bd)
+
+
+
+
+        # for m,n in tname.items():
+        #     print("Name=",n[0])
+        #     print("City=",n[1])
+        #     print("Name of the City =",x.city)
+        #     print("Name of the Movie =",x.name)
+        #     if int(x.tid)==m and x.city==n[1]:
+        #        minstance = x
+        #        tn=n[0]
+        #        tid=m
                 
 
-    return render_template('movie_booking.html',mname=mname,minstance=minstance,tn=tn,tid=tid)
+    return render_template('movie_booking.html',mname=mname,minstance=minstance,tn=tn,tid=tid,citylist=cityname)
 
 
 

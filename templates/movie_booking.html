@@ -12,6 +12,27 @@
     />
   </head>
   <body>
+    <div><p class="text-center fs-3">Watch Location in your City</p></div>
+    <form action="/movie/{{mname}}" method="POST">
+      <div class="input-group container pb-5">
+        <button type="submit" class="btn btn-dark">Select City</button>
+
+        <select
+          name="inputGroupSelect01"
+          class="form-select"
+          id="inputGroupSelect01"
+          onchange=""
+        >
+          <option selected>Choose...</option>
+          {% for x in citylist %}
+
+          <option value="{{loop.index}}">{{x}}</option>
+
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+
     <div class="container">
       <div class="row">
         <div class="col">
