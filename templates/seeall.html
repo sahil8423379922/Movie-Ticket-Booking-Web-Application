@@ -4,23 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
-    {% for x in mn %}
+    <div class="row container mt-3">
+      {% for x in mn %}
 
-    <a href="/movie/{{x[3]}}">
-      <div class="card mb-3">
-        <img src="{{x[1]}}" class="card-img-top" alt="..." />
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-title">{{x[0]}}</p>
-          <p class="card-text">{{x[2]}}</p>
-          <p class="card-text">
-            <small class="text-body-secondary">Last updated 3 mins ago</small>
-          </p>
-        </div>
+      <div class="col-3">
+        <a href="/movie/{{x[3]}}">
+          <div class="card mb-3">
+            <img src="{{x[1]}}" class="img-fluid" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">{{x[0]}}</h5>
+
+              <p class="card-text">{{x[2]}}</p>
+            </div>
+          </div>
+        </a>
       </div>
-    </a>
-    {% endfor %}
+      {% endfor %}
+    </div>
   </body>
 </html>
