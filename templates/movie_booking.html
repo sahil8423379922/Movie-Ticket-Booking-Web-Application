@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{mname}}</title>
+    <title>{{moviedetails.name}}</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -13,7 +13,7 @@
   </head>
   <body>
     <div><p class="text-center fs-3">Watch Location in your City</p></div>
-    <form action="/movie/{{mname}}" method="POST">
+    <form action="/movie/{{mid}}" method="POST">
       <div class="input-group container pb-5">
         <button type="submit" class="btn btn-dark">Select City</button>
 
@@ -35,7 +35,8 @@
 
     <div class="container">
       <div class="row">
-        <div class="col">
+        {% for m in td %}
+        <div class="col-4">
           <div class="card" style="width: 18rem">
             <img
               src="https://png.pngtree.com/png-clipart/20210705/ourmid/pngtree-movie-icon-3d-illustration-png-image_3562961.jpg"
@@ -43,14 +44,13 @@
               alt="..."
             />
             <div class="card-body">
-              <h5 class="card-title">{{mname}}</h5>
-              <p>Theater Name :- {{tn}}</p>
-              <p>City Name :- {{minstance.city}}</p>
-
+              <h5 class="card-title">{{m.tname}}</h5>
+              <p class="card-text">{{moviedetails.name}}</p>
               <a href="#" class="btn btn-primary">Book Ticket</a>
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
     </div>
   </body>

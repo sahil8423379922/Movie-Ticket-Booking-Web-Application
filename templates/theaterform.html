@@ -13,51 +13,49 @@
   </head>
   <body>
     <center>
-      <p class="fs-3">Enter Movie Details</p>
-      <form class="w-50 text-start" action="/dashboard" method="POST">
+      <p class="fs-3">Enter Theater Details</p>
+      <form class="w-50 text-start" action="/theater" method="POST">
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Theater ID</label>
+          <input
+            type="text"
+            class="form-control"
+            id="tid"
+            name="tid"
+            aria-describedby="emailHelp"
+          />
+        </div>
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label"
-            >Movie Banner Url</label
+            >Theater Name</label
           >
           <input
             type="text"
             class="form-control"
-            id="url"
-            name="url"
+            id="tname"
+            name="tname"
             aria-describedby="emailHelp"
           />
         </div>
         <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label">Movie Name</label>
-          <input
-            type="text"
-            class="form-control"
-            id="name"
-            name="name"
-            aria-describedby="emailHelp"
-          />
-        </div>
-        <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label"
-            >Description</label
-          >
-          <input type="text" class="form-control" id="desc" name="desc" />
+          <label for="exampleInputPassword1" class="form-label">Mobie ID</label>
+          <input type="text" class="form-control" id="mid" name="mid" />
         </div>
 
-        <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label">Movie ID</label>
-          <input type="text" class="form-control" id="tid" name="tid" />
-        </div>
         <div class="mb-3">
           <label for="exampleInputPassword1" class="form-label">City</label>
           <input type="text" class="form-control" id="city" name="city" />
         </div>
 
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label"
+            >Theater URL</label
+          >
+          <input type="text" class="form-control" id="url" name="url" />
+        </div>
+
         <div class="d-grid gap-2">
           <button class="btn btn-primary" type="submit">Add Movie</button>
-          <a class="btn btn-primary" type="submit" href="/theater"
-            >Add Theater</a
-          >
         </div>
       </form>
     </center>

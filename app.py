@@ -10,7 +10,9 @@ app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///auth.db"
 app.config['SQLALCHEMY_BINDS']={
    'default':"sqlite:///auth.db",
    'db2':"sqlite:///movie.db",
-   'db3':"sqlite:///bookedticket.db"
+   'db3':"sqlite:///bookedticket.db",
+   'db4':"sqlite:///tdb.db",
+
 }
 
 
@@ -43,7 +45,7 @@ class db_movie(db.Model):
     name=db.Column(db.String(200),nullable=False)
     url=db.Column(db.String(500),nullable = False)
     desc=db.Column(db.String(500),nullable = False)
-    tid=db.Column(db.String(500),nullable = False)
+    mid=db.Column(db.String(500),nullable = False)
     city=db.Column(db.String(500),nullable = False)
     
 
@@ -58,6 +60,22 @@ class db_booked_tickets(db.Model):
     sno =db.Column(db.Integer,primary_key=True)
     email=db.Column(db.String(200),nullable=False)
     password=db.Column(db.String(500),nullable = False)
+    
+
+
+    def __repr__(self) -> str:
+        return "{self.sno}-{self.title}"
+    
+
+#Model for Theater DB
+class db_Theater(db.Model):
+    __bind_key__ = 'db4'
+    sno =db.Column(db.Integer,primary_key=True)
+    tid=db.Column(db.String(200),nullable=False)
+    tname=db.Column(db.String(200),nullable=False)
+    mid=db.Column(db.String(500),nullable = False)
+    city=db.Column(db.String(500),nullable = False)
+    turl=db.Column(db.String(500),nullable = False)
     
 
 
@@ -104,6 +122,7 @@ def seeall():
         lst.append(x.name)
         lst.append(x.url)
         lst.append(x.desc)
+        lst.append(x.mid)
         mn.append(lst)
     
     return render_template('seeall.html',mn=mn)
@@ -113,52 +132,26 @@ def admin():
     return render_template('dashbaord.html')
 
 
-@app.route('/movie/<string:mname>',methods =['GET','POST'])
-def movie(mname):
+@app.route('/movie/<string:mid>',methods =['GET','POST'])
+def movie(mid):
+
+    citylist=["Delhi","Kanpur"]
+    td=[]
+    moviedetails=""
+
     if request.method =='POST':
         city = request.form['inputGroupSelect01']
         print(city)
+      
+        fetchTheather = db_Theater.query.all()
+        for x in fetchTheather:
+            if int(x.mid)==int(mid) and citylist[int(city)-1]==x.city:
+                print("Name of the Theater =",x.tname)
+                td.append(x)
+        moviedetails = db_movie.query.filter_by(mid=mid).first()
+        
 
-
-    cityname=['Kanpur','Lucknow','Delhi','Amritsar','Noida']
-    minstance=""
-    tn=""
-    tid=""
-
-    bd={}
-    
-
-    tname={1:"INOX",2:"PVR"}
-    fetchmovie = db_movie.query.all()
-    tid=[]
-    for x in fetchmovie:
-        print("Name of the City =",x.city)
-        print("Name of the Movie =",x.name)
-        print("TID =",x.tid) 
-        tid.append(x.tid)
-
-    
-    for m,n in tname.items():
-        if m in tid:
-            bd[m]=[n,minstance]
-
-    print(bd)
-
-
-
-
-        # for m,n in tname.items():
-        #     print("Name=",n[0])
-        #     print("City=",n[1])
-        #     print("Name of the City =",x.city)
-        #     print("Name of the Movie =",x.name)
-        #     if int(x.tid)==m and x.city==n[1]:
-        #        minstance = x
-        #        tn=n[0]
-        #        tid=m
-                
-
-    return render_template('movie_booking.html',mname=mname,minstance=minstance,tn=tn,tid=tid,citylist=cityname)
+    return render_template('movie_booking.html',mid=mid,citylist=citylist,td=td,moviedetails=moviedetails)
 
 
 
@@ -169,16 +162,33 @@ def dashboard():
         mname=request.form['name']
         murl=request.form['url']
         desc=request.form['desc']
-        tid=request.form['tid']
-        city=request.form['cityname']
+        mid=request.form['tid']
+        city=request.form['city']
 
-        task =db_movie(name = mname, url=murl,desc = desc,tid=tid,city=city)
+        task =db_movie(name = mname, url=murl,desc = desc,mid=mid,city=city)
         db.session.add(task)
         db.session.commit()
         redirect('/dashboard')
 
     return render_template('dashboard.html')
 
+
+@app.route('/theater',methods =['GET','POST'])
+def Theater():
+    if request.method=="POST":
+        tid=request.form['tid']
+        tname=request.form['tname']
+        mid=request.form['mid']
+        city=request.form['city']
+        url=request.form['url']
+        task =db_Theater(tid = tid, tname=tname,mid = mid,city=city,turl=url)
+        db.session.add(task)
+        db.session.commit()
+        return render_template('theaterform.html')
+   
+
+    
+    return render_template('theaterform.html')
 
 
 
