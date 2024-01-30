@@ -209,6 +209,15 @@ def Register():
 
     return render_template('register.html')
 
+@app.route('/confirmticket/<string:tid>/<string:mid>')
+def confirmticket(tid,mid):
+    print("Theater id =",tid)
+    print("Movie id =",mid)
+
+    theater = db_Theater.query.filter_by(tid=tid).first()
+    movie = db_movie.query.filter_by(mid=mid).first()
+    return render_template('ticketbooking.html',theater=theater,movie=movie)
+
 
 
 if __name__ =="__main__":

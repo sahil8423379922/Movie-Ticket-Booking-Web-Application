@@ -44,9 +44,13 @@
               alt="..."
             />
             <div class="card-body">
-              <h5 class="card-title">{{m.tname}}</h5>
+              <h5 name="tname" class="card-title">{{m.tname}}</h5>
               <p class="card-text">{{moviedetails.name}}</p>
-              <a href="#" class="btn btn-primary">Book Ticket</a>
+             
+                <a href="/confirmticket/{{m.tid}}/{{m.mid}}" type="submit" class="btn btn-primary">
+                  Book Ticket
+                </a>
+              </form>
             </div>
           </div>
         </div>
