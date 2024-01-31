@@ -12,6 +12,7 @@ app.config['SQLALCHEMY_BINDS']={
    'db2':"sqlite:///movie.db",
    'db3':"sqlite:///bookedticket.db",
    'db4':"sqlite:///tdb.db",
+   'db5':"sqlite:///ticketrange.db",
 
 }
 
@@ -31,6 +32,14 @@ class db_model(db.Model):
     sno =db.Column(db.Integer,primary_key=True)
     email=db.Column(db.String(200),nullable=False)
     password=db.Column(db.String(500),nullable = False)
+
+
+#Model for TicketRange
+class db_TicketRange(db.Model):
+    __bind_key__ = 'db5'
+    sno =db.Column(db.Integer,primary_key=True)
+    tid=db.Column(db.String(200),nullable=False)
+    totalseats=db.Column(db.String(500),nullable = False)
     
 
 
@@ -44,6 +53,7 @@ class db_movie(db.Model):
     sno =db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(200),nullable=False)
     url=db.Column(db.String(500),nullable = False)
+    tid=db.Column(db.String(500),nullable = False)
     desc=db.Column(db.String(500),nullable = False)
     mid=db.Column(db.String(500),nullable = False)
     city=db.Column(db.String(500),nullable = False)
@@ -73,7 +83,6 @@ class db_Theater(db.Model):
     sno =db.Column(db.Integer,primary_key=True)
     tid=db.Column(db.String(200),nullable=False)
     tname=db.Column(db.String(200),nullable=False)
-    mid=db.Column(db.String(500),nullable = False)
     city=db.Column(db.String(500),nullable = False)
     turl=db.Column(db.String(500),nullable = False)
     
@@ -144,11 +153,14 @@ def movie(mid):
         print(city)
       
         fetchTheather = db_Theater.query.all()
+        moviedetails = db_movie.query.filter_by(mid=mid).first()
         for x in fetchTheather:
-            if int(x.mid)==int(mid) and citylist[int(city)-1]==x.city:
+            if int(x.tid)==int(moviedetails.tid) and citylist[int(city)-1]==x.city:
                 print("Name of the Theater =",x.tname)
                 td.append(x)
-        moviedetails = db_movie.query.filter_by(mid=mid).first()
+
+        
+        
         
 
     return render_template('movie_booking.html',mid=mid,citylist=citylist,td=td,moviedetails=moviedetails)
@@ -162,10 +174,12 @@ def dashboard():
         mname=request.form['name']
         murl=request.form['url']
         desc=request.form['desc']
-        mid=request.form['tid']
+        mid=request.form['mid']
+        tid=request.form['tid']
         city=request.form['city']
 
-        task =db_movie(name = mname, url=murl,desc = desc,mid=mid,city=city)
+        task =db_movie(name = mname, url=murl,desc = desc,mid=mid,
+                       tid=tid,city=city)
         db.session.add(task)
         db.session.commit()
         redirect('/dashboard')
@@ -178,12 +192,16 @@ def Theater():
     if request.method=="POST":
         tid=request.form['tid']
         tname=request.form['tname']
-        mid=request.form['mid']
         city=request.form['city']
         url=request.form['url']
-        task =db_Theater(tid = tid, tname=tname,mid = mid,city=city,turl=url)
+        totalseats=request.form['ts']
+        task =db_Theater(tid = tid, tname=tname,city=city,turl=url)
+        task1 = db_TicketRange(tid=tid,totalseats=totalseats)
         db.session.add(task)
         db.session.commit()
+        db.session.add(task1)
+        db.session.commit()
+
         return render_template('theaterform.html')
    
 
@@ -194,6 +212,7 @@ def Theater():
 
 @app.route('/register',methods =['GET','POST'])
 def Register():
+  
     if request.method == "POST":
         email= request.form['email']
         password=request.form['pass']
@@ -209,14 +228,35 @@ def Register():
 
     return render_template('register.html')
 
-@app.route('/confirmticket/<string:tid>/<string:mid>')
+@app.route('/confirmticket/<string:tid>/<string:mid>',methods =['GET','POST'])
 def confirmticket(tid,mid):
-    print("Theater id =",tid)
-    print("Movie id =",mid)
-
+    flag=False
     theater = db_Theater.query.filter_by(tid=tid).first()
     movie = db_movie.query.filter_by(mid=mid).first()
-    return render_template('ticketbooking.html',theater=theater,movie=movie)
+
+    if request.method =="POST":
+        print("Total Ticket Available =",request.form['ts'])
+        totalseats =request.form['ts']
+        totalseats = db_booked_tickets.query.filter_by(tid=tid).first()
+        if int(totalseats.totalseats) >=int(totalseats):
+            return render_template('payment.html')
+        else:
+             flag=True
+             return render_template('ticketbooking.html',theater=theater,movie=movie,flag=flag)
+    else:
+        print("Theater id =",tid)
+        print("Movie id =",mid)
+        return render_template('ticketbooking.html',theater=theater,movie=movie,flag=flag)
+
+
+
+
+
+   
+
+@app.route('/payment')
+def payment():
+    return render_template('payment.html')
 
 
 
