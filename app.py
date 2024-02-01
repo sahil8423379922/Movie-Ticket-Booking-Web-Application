@@ -229,24 +229,24 @@ def Register():
     return render_template('register.html')
 
 @app.route('/confirmticket/<string:tid>/<string:mid>',methods =['GET','POST'])
-def confirmticket(tid,mid):
+def Confirmticket(tid,mid):
     flag=False
     theater = db_Theater.query.filter_by(tid=tid).first()
     movie = db_movie.query.filter_by(mid=mid).first()
 
     if request.method =="POST":
-        print("Total Ticket Available =",request.form['ts'])
-        totalseats =request.form['ts']
-        totalseats = db_booked_tickets.query.filter_by(tid=tid).first()
-        if int(totalseats.totalseats) >=int(totalseats):
-            return render_template('payment.html')
+        print("Total Ticket Available =",request.form['total'])
+        total =request.form['total']
+        totalseats = db_TicketRange.query.filter_by(tid=tid).first()
+        if int(totalseats.totalseats) >=int(total):
+            return payment(theater.tid,movie.mid,total)
         else:
              flag=True
              return render_template('ticketbooking.html',theater=theater,movie=movie,flag=flag)
     else:
         print("Theater id =",tid)
         print("Movie id =",mid)
-        return render_template('ticketbooking.html',theater=theater,movie=movie,flag=flag)
+    return render_template('ticketbooking.html',theater=theater,movie=movie,flag=flag)
 
 
 
@@ -255,7 +255,11 @@ def confirmticket(tid,mid):
    
 
 @app.route('/payment')
-def payment():
+def payment(tid,mid,total):
+    print("Theater ID =",tid)
+    print("Movie ID =",mid)
+    print("Total =",total)
+    
     return render_template('payment.html')
 
 

@@ -12,13 +12,30 @@
     />
   </head>
   <body>
-   
     <div class="container">
-     
-    <div col>
-      <h2 class="fw-semibold">{{theater.tname}}</h2>
-    <h2>{{movie.name}}</h2>
-    <form methods="POST" action="/confirmticket/{{theater.tid}}/{{movie.mid}}">
+      <div col>
+        <h2 class="fw-semibold">{{theater.tname}}</h2>
+        <h2>{{movie.name}}</h2>
+
+        <form
+          action="/confirmticket/{{theater.tid}}/{{movie.mid}}"
+          method="POST"
+        >
+          <div class="mb-3">
+            <label for="total" class="form-label">Total Tickets</label>
+            <input
+              type="number"
+              class="form-control"
+              id="total"
+              name="total"
+              aria-describedby="emailHelp"
+            />
+          </div>
+
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <!-- <form  action="/confirmticket/{{theater.tid}}/{{movie.mid}}" methods="POST">
       <div class="mb-2 mt-5">
         <label for="exampleInputEmail1" class="form-label" >
           <p class="text-start">Total Seats</p></label>
@@ -31,21 +48,15 @@
         />
         
       <button type="submit" class="btn btn-primary mt-3">Submit</button>
-    </form>
-
-    </div>
-
-    <div>
-      {% if flag %}
-      <div class="alert alert-danger" role="alert">
-        No Ticket Available
+    </form> -->
       </div>
-      
-      {% endif %}
-    </div>
 
-    </div>
-   
+      <div>
+        {% if flag %}
+        <div class="alert alert-danger" role="alert">No Ticket Available</div>
 
+        {% endif %}
+      </div>
+    </div>
   </body>
 </html>
