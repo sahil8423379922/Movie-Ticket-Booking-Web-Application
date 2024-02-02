@@ -13,6 +13,7 @@ app.config['SQLALCHEMY_BINDS']={
    'db3':"sqlite:///bookedticket.db",
    'db4':"sqlite:///tdb.db",
    'db5':"sqlite:///ticketrange.db",
+   'db6':"sqlite:///user.db"
 
 }
 
@@ -33,6 +34,18 @@ class db_model(db.Model):
     email=db.Column(db.String(200),nullable=False)
     password=db.Column(db.String(500),nullable = False)
 
+#Model for User
+class db_user(db.Model):
+    __bind_key__ = 'db6'
+    sno =db.Column(db.Integer,primary_key=True)
+    name=db.Column(db.String(200),nullable=False)
+    contact=db.Column(db.String(500),nullable = False)
+    seats=db.Column(db.String(500),nullable = False)
+    tid=db.Column(db.String(500),nullable = False)
+    mid=db.Column(db.String(500),nullable = False)
+    price=db.Column(db.String(500),nullable = False)
+
+
 
 #Model for TicketRange
 class db_TicketRange(db.Model):
@@ -40,6 +53,7 @@ class db_TicketRange(db.Model):
     sno =db.Column(db.Integer,primary_key=True)
     tid=db.Column(db.String(200),nullable=False)
     totalseats=db.Column(db.String(500),nullable = False)
+    price=db.Column(db.String(500),nullable = False)
     
 
 
@@ -195,8 +209,9 @@ def Theater():
         city=request.form['city']
         url=request.form['url']
         totalseats=request.form['ts']
+        price =request.form['price']
         task =db_Theater(tid = tid, tname=tname,city=city,turl=url)
-        task1 = db_TicketRange(tid=tid,totalseats=totalseats)
+        task1 = db_TicketRange(tid=tid,totalseats=totalseats,price=price)
         db.session.add(task)
         db.session.commit()
         db.session.add(task1)
@@ -239,7 +254,10 @@ def Confirmticket(tid,mid):
         total =request.form['total']
         totalseats = db_TicketRange.query.filter_by(tid=tid).first()
         if int(totalseats.totalseats) >=int(total):
-            return payment(theater.tid,movie.mid,total)
+            totalprice = db_TicketRange.query.filter_by(tid=tid).first()
+            cal =int(totalprice.price)*int(total)
+            return render_template('payment.html',tid=tid,mid=mid,total=total,price=cal)
+          
         else:
              flag=True
              return render_template('ticketbooking.html',theater=theater,movie=movie,flag=flag)
@@ -254,13 +272,38 @@ def Confirmticket(tid,mid):
 
    
 
-@app.route('/payment')
-def payment(tid,mid,total):
-    print("Theater ID =",tid)
-    print("Movie ID =",mid)
-    print("Total =",total)
+@app.route('/payment/<string:tid>/<string:mid>/<string:total>/<string:price>',methods=['GET','POST'])
+def payment(tid,mid,total,price):
+    cal=0
+    if request.method=='POST':
+        rangeupdate = db_TicketRange.query.filter_by(tid=tid).first()
+        rangeupdate.totalseats =int(rangeupdate.totalseats)-int(total)
+        print("Total seats received =",rangeupdate.totalseats)
+        db.session.add(rangeupdate)
+        db.session.commit()
+
+        name= request.form['name']
+        contact=request.form['contactno']
+        seats=total
+        tid=tid
+        mid=mid
+        price=price
+
     
-    return render_template('payment.html')
+
+        task =db_user(name=name,contact =contact,seats=seats,tid=tid,mid=mid,price=price)
+        db.session.add(task)
+        db.session.commit()
+
+
+
+
+
+        
+        return render_template('thankyou.html')
+    
+
+    return render_template('payment.html',tid=tid,mid=mid,total=total,price=cal)
 
 
 
